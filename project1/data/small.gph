@@ -1,0 +1,9 @@
+strict digraph "" {
+	"\"portembarked\"" -> "\"survived\"";
+	"\"portembarked\"" -> "\"numsiblings\"";
+	"\"survived\"" -> "\"numparentschildren\"";
+	"\"survived\"" -> "\"sex\"";
+	"\"numparentschildren\"" -> "\"age\"";
+	"\"fare\"" -> "\"numsiblings\"";
+	"\"numsiblings\"" -> "\"passengerclass\"";
+}

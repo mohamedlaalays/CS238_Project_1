@@ -1,16 +1,23 @@
+import sys
 import numpy as np
 from scipy.special import loggamma
 from process_data import process_data
 from graph import construct_graph
 import networkx as nx
+import random
+from networkx.drawing.nx_agraph import write_dot
+import matplotlib.pyplot as plt
+
+
 
 def prior(vars_info, G):
     var_names, var_to_indx, var_to_r = vars_info
     n = len(var_names)
     r = [var_to_r[var_name] for var_name in var_names]
-    q = [np.prod([r[var_to_indx[neigh_name]] for neigh_name in G.predecessors(var_name)]) for var_name in var_names] #BUG if the array is empty it retunrs 1
+    q = [np.prod([r[var_to_indx[neigh_name]] for neigh_name in G.predecessors(var_name)]) for var_name in var_names]
     priors = [np.ones((int(q[i]), int(r[i]))) for i in range(n)]
     return priors
+
 
 
 def bayesian_score_component(M, alpha):
@@ -20,6 +27,8 @@ def bayesian_score_component(M, alpha):
     p -= np.sum(loggamma(np.sum(alpha, axis=1) + np.sum(M, axis=1)))
     return p
 
+
+
 def bayesian_score(vars_info, G, D):
     n = len(vars_info[0])
     M = statistics(vars_info, G, D)
@@ -28,10 +37,6 @@ def bayesian_score(vars_info, G, D):
     return score
 
 
-# def sub2ind(siz, x):
-#     k = np.cumprod(siz[:-1])
-#     k = np.insert(k, 0, 1)
-#     return int(np.dot(k, x-1)) + 1
 
 def statistics(vars_info, G, D):
     var_names, var_to_indx, var_to_r = vars_info
@@ -56,27 +61,27 @@ def statistics(vars_info, G, D):
     return M
 
 
+
 def initial_graph(var_names):
     G = nx.DiGraph()
     for var_name in var_names:
         G.add_node(var_name)
     return G
 
+
+
 def find_bayesian_network(vars_info, D):
     var_names, _, _ = vars_info
-    print("var_names: ", var_names)
     G = initial_graph(var_names)
+    G_score = float("-inf")
     for i, u in enumerate(var_names):
         score = bayesian_score(vars_info, G, D)
-        # print("u: ", u)
-        # print("score: ", score)
         while True:
-            best_score, best_node = float('-inf'), 0 # NOT SURE WHY ZERO
+            best_score, best_node = float('-inf'), 0
             for v in var_names[:i]:
                 if not G.has_edge(v, u):
                     G.add_edge(v, u)
                     curr_score = bayesian_score(vars_info, G, D)
-                    print("curr_score: ", curr_score)
                     if curr_score > best_score:
                         best_score, best_node = curr_score, v
                     G.remove_edge(v, u)
@@ -84,20 +89,62 @@ def find_bayesian_network(vars_info, D):
             if best_score > score:
                 score = best_score
                 G.add_edge(best_node, u)
-                print("Best Node: ", best_node)
             else:
+                G_score = score
                 break
-    # print("Structure: ", G)
-    # print("Bayesian Score: ", bayesian_score(vars_info, G, D))
-    return G
+    return G, G_score
 
+
+
+def shuffle(vars_info, D):
+    var_names, var_to_indx, var_to_r = vars_info
+    indices = [i for i in range(len(var_names))]
+    
+    temp = list(zip(var_names, list(var_to_indx.items()), list(var_to_r.items()), indices))
+    random.shuffle(temp)
+    var_names, var_to_indx_temp, var_to_r_temp, indices = zip(*temp)
+    var_to_indx, var_to_r = dict(var_to_indx_temp), dict(var_to_r_temp)
+    D = D[:, indices]
+    return (var_names, var_to_indx, var_to_r), D
+
+
+
+def best_bayesian(file):
+    vars_info, D = process_data(f"data/{file}.csv")
+    G_best, G_best_score = find_bayesian_network(vars_info, D)
+    for i in range(1):
+        shuffled_vars, shuffled_D = shuffle(vars_info, D)
+        G, G_score = find_bayesian_network(shuffled_vars, shuffled_D)
+        # score = bayesian_score(shuffled_vars, G, shuffled_D)
+
+        # assert G_score == score, "G_score and score should be equal"
+        if G_score > G_best_score:
+            # print("updating.......")
+            # print(G_best_score, "---------->", G_score)
+            G_best_score = G_score
+            G_best = G
+
+    return G_best, G_best_score
+
+
+
+def process_output(G, file):
+    write_dot(G, f"data/{file}.gph")
+    nx.draw(G, with_labels=True)
+    plt.savefig(f"data/{file}.png",dpi=300)
+
+
+def main():
+    file_names = {"small", "medium", "large"}
+    assert len(sys.argv) == 2, "provide the file name" 
+    assert sys.argv[1] in file_names, "Only small, medium, or large should entered as file name."
+    
+    file = sys.argv[1]
+    G, score = best_bayesian(file)
+    process_output(G, file)
+    print("Score: ", score)
 
 
 
 if __name__ == "__main__":
-    vars_info, D = process_data("example/example.csv")
-    # G = construct_graph("example/example.gph")
-    # statistics(vars_info, G, D)
-    # print(bayesian_score(vars_info, G, D))
-    find_bayesian_network(vars_info, D)
-
+    main()
