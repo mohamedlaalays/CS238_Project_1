@@ -4,6 +4,8 @@ def process_data(dir):
 
     data = np.loadtxt(dir, delimiter=",", dtype=str)
     var_names = data[0]
+    var_names = [var_name.replace('"', "") for var_name in var_names]
+    # print("numpy var_names: ", var_names)
     data = data[1:]
     data = data.astype(float)
 

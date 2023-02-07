@@ -8,11 +8,15 @@ from networkx.drawing.nx_agraph import write_dot
 import matplotlib.pyplot as plt
 
 
+# GLOBAL VARIABLES
+BAYESIAN_ITERATIONS = 30
+
 
 def process_data(dir):
 
     data = np.loadtxt(dir, delimiter=",", dtype=str)
     var_names = data[0]
+    var_names = [var_name.replace('"', "") for var_name in var_names]
     data = data[1:]
     data = data.astype(float)
 
@@ -112,11 +116,19 @@ def find_bayesian_network(vars_info, D):
 def shuffle(vars_info, D):
     var_names, var_to_indx, var_to_r = vars_info
     indices = [i for i in range(len(var_names))]
+    random.shuffle(indices)
+    # var_to_indx = {var_name:indx for var_name, indx in zip(var_names, indices)}
+    var_names = list(np.array(var_names)[indices])
+    var_to_indx = {var_name:indx for indx, var_name in enumerate(var_names)}
     
-    temp = list(zip(var_names, list(var_to_indx.items()), list(var_to_r.items()), indices))
-    random.shuffle(temp)
-    var_names, var_to_indx_temp, var_to_r_temp, indices = zip(*temp)
-    var_to_indx, var_to_r = dict(var_to_indx_temp), dict(var_to_r_temp)
+    # temp = list(zip(var_names, list(var_to_indx.items()), list(var_to_r.items()), indices))
+    # random.shuffle(temp)
+    # var_names, var_to_indx_temp, var_to_r_temp, indices = zip(*temp)
+    # var_to_indx, var_to_r = dict(var_to_indx_temp), dict(var_to_r_temp)
+
+
+
+
     D = D[:, indices]
     return (var_names, var_to_indx, var_to_r), D
 
@@ -125,15 +137,15 @@ def shuffle(vars_info, D):
 def best_bayesian(file):
     vars_info, D = process_data(f"data/{file}.csv")
     G_best, G_best_score = find_bayesian_network(vars_info, D)
-    for i in range(10): # RANGE IS SET TO ZERO
+    for i in range(BAYESIAN_ITERATIONS): # RANGE IS SET TO ZERO
         shuffled_vars, shuffled_D = shuffle(vars_info, D)
         G, G_score = find_bayesian_network(shuffled_vars, shuffled_D)
         # score = bayesian_score(shuffled_vars, G, shuffled_D)
 
         # assert G_score == score, "G_score and score should be equal"
         if G_score > G_best_score:
-            # print("updating.......")
-            # print(G_best_score, "---------->", G_score)
+            print("updating.......")
+            print(G_best_score, "---------->", G_score)
             G_best_score = G_score
             G_best = G
 

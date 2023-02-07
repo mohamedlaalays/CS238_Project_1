@@ -2,7 +2,8 @@ from collections import defaultdict
 from email.policy import default
 import networkx as nx
 from collections import defaultdict
-import matplotlib.pyplot as plt
+from bayesian_network import bayesian_score
+from process_data import process_data
 
 def construct_graph(dir):
     G = nx.DiGraph()
@@ -24,4 +25,9 @@ def construct_graph(dir):
 
 
 if __name__ == "__main__":
-    construct_graph("example/example.gph")
+    G = construct_graph("data/small.gph")
+    print("-----G-------:\n", G)
+    vars_info, D = process_data("data/small.csv")
+    # print("var_names: ", vars_info[0])
+    score = bayesian_score(vars_info, G, D)
+    print("score: ", score)
