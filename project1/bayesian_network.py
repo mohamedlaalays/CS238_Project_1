@@ -125,7 +125,7 @@ def shuffle(vars_info, D):
 def best_bayesian(file):
     vars_info, D = process_data(f"data/{file}.csv")
     G_best, G_best_score = find_bayesian_network(vars_info, D)
-    for i in range(0): # RANGE IS SET TO ZERO
+    for i in range(10): # RANGE IS SET TO ZERO
         shuffled_vars, shuffled_D = shuffle(vars_info, D)
         G, G_score = find_bayesian_network(shuffled_vars, shuffled_D)
         # score = bayesian_score(shuffled_vars, G, shuffled_D)
