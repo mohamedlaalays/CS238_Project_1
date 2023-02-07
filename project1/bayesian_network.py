@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 # GLOBAL VARIABLES
-BAYESIAN_ITERATIONS = 100
+BAYESIAN_ITERATIONS = 10
 
 
 def process_data(dir):
@@ -96,7 +96,7 @@ def find_bayesian_network(vars_info, D):
         while True:
             best_score, best_node = float('-inf'), 0
             for v in var_names[:i]:
-                if not G.has_edge(v, u) and len(list(G.predecessors(u))) <= 8: # Cut down the number of parents
+                if not G.has_edge(v, u) and len(list(G.predecessors(u))) <= 10: # Cut down the number of parents
                     G.add_edge(v, u)
                     curr_score = bayesian_score(vars_info, G, D)
                     if curr_score > best_score:
@@ -138,6 +138,7 @@ def best_bayesian(file):
     vars_info, D = process_data(f"data/{file}.csv")
     G_best, G_best_score = find_bayesian_network(vars_info, D)
     for i in range(BAYESIAN_ITERATIONS): # RANGE IS SET TO ZERO
+        print("-----------running iteration ", i, " ---------------")
         shuffled_vars, shuffled_D = shuffle(vars_info, D)
         G, G_score = find_bayesian_network(shuffled_vars, shuffled_D)
         # score = bayesian_score(shuffled_vars, G, shuffled_D)
