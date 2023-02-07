@@ -21,13 +21,30 @@ def construct_graph(dir):
     # plt.draw()
     # print(G)
     return G
-    
+
+
+def process_output(file_type):
+
+    file = open(f"data/temp{file_type}.gph", "r")
+    write_file = open(f"data/{file_type}.gph", "w")
+    lines = file.readlines()
+    lines = lines[:-1]
+    lines = lines[1:]
+    for line in lines:
+        for char in '"\>;':
+            line = line.replace(char, '')
+        words = line.split("-")
+        if len(words) < 2: continue # if node doesn't have a child, ignore that node
+        parent, child = words[0].strip(), words[1].strip()
+        write_file.write(parent+","+child+"\n")
+    write_file.close()   
 
 
 if __name__ == "__main__":
-    G = construct_graph("data/small.gph")
+    process_output("medium")
+    G = construct_graph("data/medium.gph")
     print("-----G-------:\n", G)
-    vars_info, D = process_data("data/small.csv")
+    vars_info, D = process_data("data/medium.csv")
     # print("var_names: ", vars_info[0])
     score = bayesian_score(vars_info, G, D)
     print("score: ", score)

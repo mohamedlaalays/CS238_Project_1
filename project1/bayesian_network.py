@@ -168,7 +168,7 @@ def process_output(G, file_type):
         for char in '"\>;':
             line = line.replace(char, '')
         words = line.split("-")
-        # print("words: ", words)
+        if len(words) < 2: continue # if node doesn't have a child, ignore that node
         parent, child = words[0].strip(), words[1].strip()
         write_file.write(parent+","+child+"\n")
     write_file.close()
