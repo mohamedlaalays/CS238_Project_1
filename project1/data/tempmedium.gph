@@ -1,13 +1,14 @@
 strict digraph "" {
-	"\"freesulfurdioxide\"" -> "\"volatileacidity\"";
-	"\"residualsugar\"" -> "\"chlorides\"";
-	"\"fixedacidity\"";
+	"\"totalsulfurdioxide\"" -> "\"sulphates\"";
+	"\"totalsulfurdioxide\"" -> "\"density\"";
 	"\"chlorides\"" -> "\"sulphates\"";
-	"\"sulphates\"" -> "\"density\"";
-	"\"sulphates\"" -> "\"alcohol\"";
-	"\"volatileacidity\"" -> "\"density\"";
-	"\"density\"" -> "\"ph\"";
-	"\"ph\"" -> "\"totalsulfurdioxide\"";
-	"\"alcohol\"" -> "\"quality\"";
-	"\"quality\"" -> "\"citricacid\"";
+	"\"chlorides\"" -> "\"fixedacidity\"";
+	"\"chlorides\"" -> "\"ph\"";
+	"\"sulphates\"" -> "\"fixedacidity\"";
+	"\"sulphates\"" -> "\"citricacid\"";
+	"\"fixedacidity\"" -> "\"freesulfurdioxide\"";
+	"\"ph\"" -> "\"quality\"";
+	"\"density\"" -> "\"alcohol\"";
+	"\"alcohol\"" -> "\"volatileacidity\"";
+	"\"quality\"" -> "\"residualsugar\"";
 }
