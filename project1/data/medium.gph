@@ -1,14 +1,14 @@
-strict digraph "" {
-	"\"residualsugar\"" -> "\"freesulfurdioxide\"";
-	"\"residualsugar\"" -> "\"totalsulfurdioxide\"";
-	"\"residualsugar\"" -> "\"alcohol\"";
-	"\"freesulfurdioxide\"" -> "\"alcohol\"";
-	"\"freesulfurdioxide\"" -> "\"density\"";
-	"\"volatileacidity\"";
-	"\"totalsulfurdioxide\"" -> "\"ph\"";
-	"\"alcohol\"" -> "\"chlorides\"";
-	"\"density\"" -> "\"sulphates\"";
-	"\"ph\"" -> "\"quality\"";
-	"\"sulphates\"" -> "\"fixedacidity\"";
-	"\"quality\"" -> "\"citricacid\"";
-}
+chlorides,citricacid
+chlorides,fixedacidity
+citricacid,sulphates
+citricacid,totalsulfurdioxide
+citricacid,quality
+citricacid,alcohol
+sulphates,quality
+sulphates,alcohol
+sulphates,volatileacidity
+totalsulfurdioxide,ph
+quality,freesulfurdioxide
+ph,alcohol
+ph,residualsugar
+alcohol,density

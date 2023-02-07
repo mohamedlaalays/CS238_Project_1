@@ -1,12 +1,25 @@
 import sys
+import time
 import numpy as np
 from scipy.special import loggamma
-from process_data import process_data
-from graph import construct_graph
 import networkx as nx
 import random
 from networkx.drawing.nx_agraph import write_dot
 import matplotlib.pyplot as plt
+
+
+
+def process_data(dir):
+
+    data = np.loadtxt(dir, delimiter=",", dtype=str)
+    var_names = data[0]
+    data = data[1:]
+    data = data.astype(float)
+
+    var_to_indx = {var_name:indx for indx, var_name in enumerate(var_names)}
+    var_to_r = {var_name:int(np.amax(data[:, i])) for i, var_name in enumerate(var_names)}
+
+    return (var_names, var_to_indx, var_to_r), data
 
 
 
@@ -79,7 +92,7 @@ def find_bayesian_network(vars_info, D):
         while True:
             best_score, best_node = float('-inf'), 0
             for v in var_names[:i]:
-                if not G.has_edge(v, u):
+                if not G.has_edge(v, u) and len(list(G.predecessors(u))) <= 5: # Cut down the number of parents
                     G.add_edge(v, u)
                     curr_score = bayesian_score(vars_info, G, D)
                     if curr_score > best_score:
@@ -112,7 +125,7 @@ def shuffle(vars_info, D):
 def best_bayesian(file):
     vars_info, D = process_data(f"data/{file}.csv")
     G_best, G_best_score = find_bayesian_network(vars_info, D)
-    for i in range(1):
+    for i in range(0): # RANGE IS SET TO ZERO
         shuffled_vars, shuffled_D = shuffle(vars_info, D)
         G, G_score = find_bayesian_network(shuffled_vars, shuffled_D)
         # score = bayesian_score(shuffled_vars, G, shuffled_D)
@@ -128,11 +141,24 @@ def best_bayesian(file):
 
 
 
-def process_output(G, file):
-    write_dot(G, f"data/{file}.gph")
+def process_output(G, file_type):
     nx.draw(G, with_labels=True)
-    plt.savefig(f"data/{file}.png",dpi=300)
+    plt.savefig(f"data/{file_type}.png",dpi=300)
 
+    write_dot(G, f"data/temp{file_type}.gph")
+    file = open(f"data/temp{file_type}.gph", "r")
+    write_file = open(f"data/{file_type}.gph", "w")
+    lines = file.readlines()
+    lines = lines[:-1]
+    lines = lines[1:]
+    for line in lines:
+        for char in '"\>;':
+            line = line.replace(char, '')
+        words = line.split("-")
+        # print("words: ", words)
+        parent, child = words[0].strip(), words[1].strip()
+        write_file.write(parent+","+child+"\n")
+    write_file.close()
 
 def main():
     file_names = {"small", "medium", "large"}
@@ -147,4 +173,6 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))

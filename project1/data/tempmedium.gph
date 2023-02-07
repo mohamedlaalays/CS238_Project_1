@@ -1,0 +1,16 @@
+strict digraph "" {
+	"\"chlorides\"" -> "\"citricacid\"";
+	"\"chlorides\"" -> "\"fixedacidity\"";
+	"\"citricacid\"" -> "\"sulphates\"";
+	"\"citricacid\"" -> "\"totalsulfurdioxide\"";
+	"\"citricacid\"" -> "\"quality\"";
+	"\"citricacid\"" -> "\"alcohol\"";
+	"\"sulphates\"" -> "\"quality\"";
+	"\"sulphates\"" -> "\"alcohol\"";
+	"\"sulphates\"" -> "\"volatileacidity\"";
+	"\"totalsulfurdioxide\"" -> "\"ph\"";
+	"\"quality\"" -> "\"freesulfurdioxide\"";
+	"\"ph\"" -> "\"alcohol\"";
+	"\"ph\"" -> "\"residualsugar\"";
+	"\"alcohol\"" -> "\"density\"";
+}

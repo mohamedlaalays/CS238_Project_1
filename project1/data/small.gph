@@ -1,9 +1,10 @@
-strict digraph "" {
-	"\"portembarked\"" -> "\"survived\"";
-	"\"portembarked\"" -> "\"numsiblings\"";
-	"\"survived\"" -> "\"numparentschildren\"";
-	"\"survived\"" -> "\"sex\"";
-	"\"numparentschildren\"" -> "\"age\"";
-	"\"fare\"" -> "\"numsiblings\"";
-	"\"numsiblings\"" -> "\"passengerclass\"";
-}
+age,numparentschildren
+age,passengerclass
+portembarked,passengerclass
+portembarked,sex
+fare,passengerclass
+numparentschildren,sex
+numparentschildren,numsiblings
+passengerclass,sex
+passengerclass,survived
+sex,survived
